@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class PlayerRotationAndroid : MonoBehaviour {
 
     [SerializeField] private float _sensitivity = 0.4f;
-    private Vector3 _mouseReference;
     private Vector3 _mouseOffset;
     private Vector3 _rotation;
     private Vector3 touchPos;
@@ -19,9 +18,7 @@ public class PlayerRotationAndroid : MonoBehaviour {
     public Text errorText4;
     private Touch touch;
 
-    private float rotX = 0f;
-    private float rotY = 0f;
-    private Vector3 origRot;
+
 
 
     public Text button;
@@ -30,20 +27,13 @@ public class PlayerRotationAndroid : MonoBehaviour {
     void Start()
     {
         _rotation = Vector3.zero;
-
-        origRot = transform.eulerAngles;
-        rotX = origRot.x;
-        rotY = origRot.y;
     }
 
     // Update is called once per frame
     void Update()
     {
         errorText2.text = "" + Input.touchCount;
-
-
         //Vector3 touchPos = cam.ScreenToWorldPoint(touch.position);
-
         errorText.text = "fps " + (1.0f / Time.deltaTime).ToString("F2");
 
         if (Input.touchCount > 0)
@@ -62,11 +52,9 @@ public class PlayerRotationAndroid : MonoBehaviour {
 
         }else if(touch.phase == TouchPhase.Moved)
         {
-            Debug.Log(touchPos);
+            //Debug.Log(touchPos);
             Vector3 currentTouchPosition = Input.GetTouch(0).position;
             _mouseOffset = (currentTouchPosition - touchPos);
-            errorText3.text = "" + currentTouchPosition;
-            errorText4.text = "" + _mouseOffset;
 
             _rotation.y = +(_mouseOffset.x) * _sensitivity;
             _rotation.z = 0;
@@ -74,18 +62,29 @@ public class PlayerRotationAndroid : MonoBehaviour {
             transform.eulerAngles += _rotation;
             //stopblocking
             Vector3 targetRotCamera = transform.rotation.eulerAngles;
-            if (transform.rotation.eulerAngles.x > 70 && transform.rotation.eulerAngles.x < 150)
+            if (transform.rotation.eulerAngles.x > 30 && transform.rotation.eulerAngles.x < 150)
             {
-                targetRotCamera.x = 70;
+                targetRotCamera.x = 30;
             }
-            else if (transform.rotation.eulerAngles.x < 300 && transform.rotation.eulerAngles.x > 150)
+            else if (transform.rotation.eulerAngles.x < 330 && transform.rotation.eulerAngles.x > 150)
             {
-                targetRotCamera.x = 300;
+                targetRotCamera.x = 330;
             }
+
+            if (transform.rotation.eulerAngles.y > 40 && transform.rotation.eulerAngles.y < 150)
+            {
+                targetRotCamera.y = 40;
+            }
+            else if (transform.rotation.eulerAngles.y < 320 && transform.rotation.eulerAngles.y > 150)
+            {
+                targetRotCamera.y = 320;
+            }
+            errorText3.text = "" + targetRotCamera;
+            errorText4.text = "" + transform.rotation;
             //Debug.Log(transform.rotation.eulerAngles);
             transform.rotation = Quaternion.Euler(targetRotCamera);
             // store mouse
-            _mouseReference = Input.GetTouch(0).position;
+            touchPos = Input.GetTouch(0).position;
             //Debug.Log(_mouseReference);
 
         }

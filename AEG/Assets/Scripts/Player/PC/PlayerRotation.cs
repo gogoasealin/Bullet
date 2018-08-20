@@ -52,13 +52,21 @@ public class PlayerRotation : MonoBehaviour {
             Vector3 targetRotCam = transform.rotation.eulerAngles;
             if(transform.rotation.eulerAngles.x > 70 && transform.rotation.eulerAngles.x < 150)
             {
-                targetRotCam.x = 70;
+                targetRotCam.x = 70;//70
             }
             else if(transform.rotation.eulerAngles.x < 300 && transform.rotation.eulerAngles.x > 150)
             {
-                targetRotCam.x = 300;
+                targetRotCam.x = 300;//300
             }
-            //Debug.Log(transform.rotation.eulerAngles);
+            if (transform.rotation.eulerAngles.y > 40 && transform.rotation.eulerAngles.y < 150)
+            {
+                targetRotCam.y = 40;
+            }
+            else if (transform.rotation.eulerAngles.y < 320 && transform.rotation.eulerAngles.y > 150)
+            {
+                targetRotCam.y = 320;
+            }
+            Debug.Log(transform.rotation.eulerAngles);
             transform.rotation = Quaternion.Euler(targetRotCam);
             // store mouse
             _mouseReference = Input.mousePosition;
