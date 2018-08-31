@@ -3,41 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerRotation : MonoBehaviour {
+public class PlayerDragging : MonoBehaviour {
 
     //Player Movement
     [SerializeField] private float _sensitivity;
     private Vector3 _mouseReference;
     private Vector3 _mouseOffset;
-    private Vector3 _rotation;
+    private Vector3 _localPosition;
     [SerializeField] private bool _isRotating;
-
+    
     // PowerUps
     private bool slowTime;
 
     // Managers
     private MenuManager menuManager;
 
+    //Scripts
+    [SerializeField] Camera cam;
+
+
+
     void Start()
     {
-        _rotation = Vector3.zero;
+        _localPosition = Vector3.zero;
+
         if (GameObject.Find("MenuManager") != null)
         {
             menuManager = GameObject.Find("MenuManager").GetComponent<MenuManager>();
-            _sensitivity = menuManager.sensitivity / 10;
+            _sensitivity = menuManager.sensitivity / 500;
         }
         else
         {
+            _sensitivity = 2f/ 500;
             Debug.Log("No MenuManager found");
         }
+
+
     }
 
     // Update is called once per frame
-    void LateUpdate() {
+    void Update()
+    {
+        
+        //Debug.Log("draw" + transform.position);
+
         if (Input.GetMouseButtonDown(0))
         {
             // rotating flag
-           _isRotating = true;
+            _isRotating = true;
             // store mouse
             _mouseReference = Input.mousePosition;
         }
@@ -47,41 +60,48 @@ public class PlayerRotation : MonoBehaviour {
             return;
         }
         //move forward
-  
+
         if (_isRotating)
-        {
+        {        
+            
             //offset
-            _mouseOffset = (Input.mousePosition - _mouseReference );
+            _mouseOffset = (Input.mousePosition - _mouseReference);
 
             // apply rotation
             //_rotation.y = -(_mouseOffset.x + _mouseOffset.y) * _sensitivity;
-            _rotation.y = +(_mouseOffset.x) * _sensitivity;
-            _rotation.z = 0;
-            _rotation.x = -(_mouseOffset.y) * _sensitivity;
+            _localPosition.y = +(_mouseOffset.y) * _sensitivity;
+            _localPosition.z = 0;
+            _localPosition.x = (_mouseOffset.x) * _sensitivity;
 
 
-            //transform.Rotate(_rotation.x, _rotation.y, 0, Space.Self);
-            transform.eulerAngles += _rotation ;
+
             //stopblocking
-            Vector3 targetRotCam = transform.rotation.eulerAngles;
-            if(transform.rotation.eulerAngles.x > 70 && transform.rotation.eulerAngles.x < 150)
+            Vector3 playerPosition = cam.WorldToViewportPoint(transform.position);
+
+            if (playerPosition.x < 0.1f && _localPosition.x < 0)
             {
-                targetRotCam.x = 70;//70
+                _localPosition.x = 0f;
             }
-            else if(transform.rotation.eulerAngles.x < 300 && transform.rotation.eulerAngles.x > 150)
+            else if (playerPosition.x > 0.9f && _localPosition.x > 0)
             {
-                targetRotCam.x = 300;//300
+                _localPosition.x = 0f;
             }
-            if (transform.rotation.eulerAngles.y > 70 && transform.rotation.eulerAngles.y < 150)
+
+            if (playerPosition.y < 0.1f && _localPosition.y < 0)
             {
-                targetRotCam.y = 70;
+                _localPosition.y = 0f;
             }
-            else if (transform.rotation.eulerAngles.y < 290 && transform.rotation.eulerAngles.y > 150)
+            else if (playerPosition.y > 0.9f && _localPosition.y > 0)
             {
-                targetRotCam.y = 290;
+                _localPosition.y = 0f;
             }
-            //Debug.Log(transform.rotation.eulerAngles);
-            transform.rotation = Quaternion.Euler(targetRotCam);
+            
+            
+            transform.localPosition += _localPosition;
+            
+            //rb.MovePosition(rb.position + _localPosition);
+
+            
             // store mouse
             _mouseReference = Input.mousePosition;
         }
@@ -110,4 +130,9 @@ public class PlayerRotation : MonoBehaviour {
     {
         SceneManager.LoadScene("Menu");
     }
+
+
+
+
+
 }

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour {
+public class PlayerMovement : MonoBehaviour {
 
-    [SerializeField]private Rigidbody rb;
-    public float speed = 10f;
+    
+    public float speed = 50f;
 
 
 
@@ -13,8 +13,4 @@ public class Movement : MonoBehaviour {
     {
         transform.position += transform.forward * Time.deltaTime * speed;
     }
-
-
-
-
 }

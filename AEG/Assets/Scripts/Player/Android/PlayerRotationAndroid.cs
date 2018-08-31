@@ -2,37 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerRotationAndroid : MonoBehaviour {
 
-    [SerializeField] private float _sensitivity = 0.4f;
+    // PlayerMovement
+    [SerializeField] private float _sensitivity;
     private Vector3 _mouseOffset;
     private Vector3 _rotation;
     private Vector3 touchPos;
     [SerializeField] private bool _isRotating;
     public Camera cam;
-
-    public Text errorText;
-    public Text errorText2;
-    public Text errorText3;
-    public Text errorText4;
     private Touch touch;
 
+    // Debuging
+    [SerializeField]private Text errorText;
 
 
+    //PowerUps
+    private bool slowTime;
 
-    public Text button;
-    public float count = 0;
+    // Managers
+    [SerializeField] private MenuManager menuManager;
+
 
     void Start()
     {
         _rotation = Vector3.zero;
+        if (GameObject.Find("MenuManager"))
+        {
+            menuManager = GameObject.Find("MenuManager").GetComponent<MenuManager>();
+            _sensitivity = menuManager.sensitivity / 10;
+        }
+        else
+        {
+            Debug.Log("No MenuManager found");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        errorText2.text = "" + Input.touchCount;
+        //errorText2.text = "" + Input.touchCount;
         //Vector3 touchPos = cam.ScreenToWorldPoint(touch.position);
         errorText.text = "fps " + (1.0f / Time.deltaTime).ToString("F2");
 
@@ -50,7 +61,7 @@ public class PlayerRotationAndroid : MonoBehaviour {
             touchPos = touch.position;
             //errorText.text = "" + touchPos;
 
-        }else if(touch.phase == TouchPhase.Moved)
+        } else if (touch.phase == TouchPhase.Moved)
         {
             //Debug.Log(touchPos);
             Vector3 currentTouchPosition = Input.GetTouch(0).position;
@@ -79,8 +90,6 @@ public class PlayerRotationAndroid : MonoBehaviour {
             {
                 targetRotCamera.y = 320;
             }
-            errorText3.text = "" + targetRotCamera;
-            errorText4.text = "" + transform.rotation;
             //Debug.Log(transform.rotation.eulerAngles);
             transform.rotation = Quaternion.Euler(targetRotCamera);
             // store mouse
@@ -92,10 +101,28 @@ public class PlayerRotationAndroid : MonoBehaviour {
 
     }
 
-    public void Button()
+    public void PowerUp()
     {
-        count++;
-        button.text = " Yes " + count;
 
+        slowTime = !slowTime;
+        if (slowTime)
+        {
+            Time.timeScale = 0.2f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
+    }
+
+    public void RestartCurrentScene()
+    {
+        Scene loadedLevel = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(loadedLevel.buildIndex);
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }
